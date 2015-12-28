@@ -66,7 +66,7 @@ def lambda_handler (event, context):
         circuit_entities = {}
         for circuit_id, circuit in new_image['circuits']['M'].iteritems():
 		# map the circuit id to the index
-		circuit_index = circuit_lookup[circuid_id]
+		circuit_index = circuit_lookup[circuit_id]
                 # extract voltage + amperage
                 voltage_in_v = circuit['M']['voltage-in-v']['N']
                 amperage_in_a = circuit['M']['amperage-in-a']['N']
