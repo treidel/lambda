@@ -9,7 +9,10 @@ import requests
 
 # create the logger
 logger = logging.getLogger()
+# default logging level is INFO
 logger.setLevel(logging.INFO)
+# lower the logging level for the requests module
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 logger.info('Loading function')
 
@@ -46,17 +49,31 @@ def lambda_handler (event, context):
         if response.status_code != 200:
             logger.error('ignoring record with device={} status={}'.format(device, response.status_code))
             continue
+
+	# parse out the device object
+	device = json.loads(response.text)
+	logger.debug(json.dumps(device))
+
+	# construct the circuit lookup
+	circuit_lookup = {}
+	for circuit in device['circuits']:
+		circuit_name = circuit['name']
+		circuit_index = circuit['index']
+		logging.debug('mapping name={} to index={}'.format(circuit_name, circuit_index))
+		circuit_lookup[circuit_name] = circuit_index
         
         # iterate through the circuits 
         circuit_entities = {}
         for circuit_id, circuit in new_image['circuits']['M'].iteritems():
+		# map the circuit id to the index
+		circuit_index = circuit_lookup[circuid_id]
                 # extract voltage + amperage
                 voltage_in_v = circuit['M']['voltage-in-v']['N']
                 amperage_in_a = circuit['M']['amperage-in-a']['N']
                 # calculate energy consumed in kw-h
                 energy_in_kwh = (float(voltage_in_v) * float(amperage_in_a) * float(duration_in_s)) / float(3600 * 1000)
                 circuit_entity = {'circuit' : circuit_id, 'energy-in-kwh' : energy_in_kwh}
-                circuit_entities['circuit_id'] = circuit_entity
+                circuit_entities[circuit_index] = circuit_entity
         # create the energy consumption entity
         consumption_entity = {'device' : device, 'timestamp' : timestamp, 'circuits' : circuit_entities}
         
