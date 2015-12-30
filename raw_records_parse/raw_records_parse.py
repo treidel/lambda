@@ -48,13 +48,13 @@ def lambda_handler (event, context):
             logger.error('ignoring record with device={} status={}'.format(device, response.status_code))
             continue
 
-	# parse out the device object
-	device = json.loads(response.text)
-	logger.debug(json.dumps(device))
+	# parse out the device entity
+	device_entity = json.loads(response.text)
+	logger.debug(json.dumps(device_entity))
 
 	# construct the circuit lookup
 	circuit_lookup = {}
-	for circuit in device['circuits']:
+	for circuit in device_entity['circuits']:
 		circuit_name = circuit['name']
 		circuit_index = circuit['index']
 		logging.debug('mapping name={} to index={}'.format(circuit_name, circuit_index))
@@ -73,7 +73,7 @@ def lambda_handler (event, context):
                 circuit_entity = {'circuit' : circuit_id, 'energy-in-kwh' : energy_in_kwh}
                 circuit_entities[circuit_index] = circuit_entity
         # create the energy consumption entity
-        consumption_entity = {'device' : device, 'timestamp' : timestamp, 'circuits' : circuit_entities}
+        consumption_entity = {'device' : device_entity, 'timestamp' : timestamp, 'circuits' : circuit_entities}
         
         # serialize 
         message = json.dumps(consumption_entity)
