@@ -39,8 +39,8 @@ def lambda_handler (event, context):
     measurement_entities = {}
     for circuit_id, measurement in event['measurements'].iteritems():
         measurement_entity = {
-            'voltage-in-v': Decimal(str(circuit['voltage-in-v'])),
-            'amperage-in-a' : Decimal(str(circuit['amperage-in-a']))
+            'voltage-in-v': Decimal(str(measurement['voltage-in-v'])),
+            'amperage-in-a' : Decimal(str(measurement['amperage-in-a']))
         }
         measurement_entities[circuit_id] = measurement_entity
             
