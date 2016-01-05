@@ -20,53 +20,52 @@ logger.info('Loading function')
 def lambda_handler (event, context): 
     logger.debug('Received event={}'.format(json.dumps(event)))
 
-    # iterate through the records
-    for record in event['records']:
-        # get the record's timestamp
-        timestamp = dateutil.parser.parse(record['timestamp'])
-        
-        # make sure they provided some data
-        assert 'circuits' in record
-    
-        # get the date for the record
-        day = timestamp.date()
+    # make sure they provided some data
+    assert 'measurements' in event
 
-        # compute the  table name
-        table_name = 'raw_' + str(day)
+    # get the record's timestamp
+    timestamp = dateutil.parser.parse(event['timestamp'])
         
-        # wrap as a table
-        table = dynamodb.Table(table_name)
+    # get the date for the record
+    day = timestamp.date()
 
-        # create the circuit entities
-        circuit_entities = {}
-        for circuit_id, circuit in record['circuits'].iteritems():
-            circuit_entity = {
-                'voltage-in-v': Decimal(str(circuit['voltage-in-v'])),
-                'amperage-in-a' : Decimal(str(circuit['amperage-in-a']))
-            }
-            circuit_entities[circuit_id] = circuit_entity
-            
-        # create the record entity
-        record_entity = {
-            'recordId' : event['device'] + ':' + record['uuid'], 
-            'device' : event['device'], 
-            'uuid' : record['uuid'],
-            'timestamp' : record['timestamp'],
-            'duration-in-s' : Decimal(str(record['duration-in-s'])),
-            'circuits' : circuit_entities
+    # compute the  table name
+    table_name = 'raw_' + str(day)
+        
+    # wrap as a table
+    table = dynamodb.Table(table_name)
+
+    # create the measurement entities
+    measurement_entities = {}
+    for circuit_id, measurement in event['measurements'].iteritems():
+        measurement_entity = {
+            'voltage-in-v': Decimal(str(circuit['voltage-in-v'])),
+            'amperage-in-a' : Decimal(str(circuit['amperage-in-a']))
         }
+        measurement_entities[circuit_id] = measurement_entity
+            
+    # create the record entity
+    record_entity = {
+        'recordId' : event['device'] + ':' + event['uuid'], 
+        'device' : event['device'], 
+        'uuid' : event['uuid'],
+        'timestamp' : event['timestamp'],
+        'duration-in-s' : Decimal(str(event['duration-in-s'])),
+        'measurements' : measurement_entities
+    }
         
-        # setup the conditional expression that the record not already exist
-        condition = Attr("recordId").not_exists()
+    # setup the conditional expression that the record not already exist
+    condition = Attr("recordId").not_exists()
     
-        try:
-            logger.debug('writing record={}'.format(record_entity))
-            table.put_item(Item=record_entity, ConditionExpression=condition)
-        except ClientError as e:
-            if e.response['Error']['Code'] == "ConditionalCheckFailedException":
-                logger.info('duplicate record for device=' + record_entity['device'] + ' uuid=' + record_entity['uuid'])
-            elif e.response['Error']['Code'] == "ResourceNotFoundException":
-                logger.info('ignoring stale record for device=' + record_entity['device'] + ' uuid=' + record_entity['uuid'] + ' timestamp=' + record_entity['timestamp'])
-            else:
-                raise
+    try:
+        logger.debug('writing record={}'.format(record_entity))
+        table.put_item(Item=record_entity, ConditionExpression=condition)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+            logger.info('duplicate record for device=' + record_entity['device'] + ' uuid=' + record_entity['uuid'])
+        elif e.response['Error']['Code'] == "ResourceNotFoundException":
+            logger.info('ignoring stale record for device=' + record_entity['device'] + ' uuid=' + record_entity['uuid'] + ' timestamp=' + record_entity['timestamp'])
+        else:
+            raise
+        
     logger.debug('write complete at {}'.format(str(datetime.datetime.now())))

@@ -60,9 +60,9 @@ def lambda_handler (event, context):
 		logging.debug('mapping name={} to index={}'.format(circuit_name, circuit_index))
 		circuit_lookup[circuit_name] = circuit_index
         
-        # iterate through the circuits 
-        circuit_entities = {}
-        for circuit_id, circuit in new_image['circuits']['M'].iteritems():
+        # iterate through the measurements
+        measurement_entities = {}
+        for circuit_id, measurement in new_image['measurements']['M'].iteritems():
 		# map the circuit id to the index
 		circuit_index = circuit_lookup[circuit_id]
                 # extract voltage + amperage
@@ -70,10 +70,10 @@ def lambda_handler (event, context):
                 amperage_in_a = circuit['M']['amperage-in-a']['N']
                 # calculate energy consumed in kw-h
                 energy_in_kwh = (float(voltage_in_v) * float(amperage_in_a) * float(duration_in_s)) / float(3600 * 1000)
-                circuit_entity = {'circuit' : circuit_id, 'energy-in-kwh' : energy_in_kwh}
-                circuit_entities[circuit_index] = circuit_entity
+                measurement_entity = {'circuit' : circuit_id, 'energy-in-kwh' : energy_in_kwh}
+                measurement_entities[circuit_index] = measurement_entity
         # create the energy consumption entity
-        consumption_entity = {'device' : device_entity, 'timestamp' : timestamp, 'circuits' : circuit_entities}
+        consumption_entity = {'device' : device_entity, 'timestamp' : timestamp, 'measurement' : measurement_entities}
         
         # serialize 
         message = json.dumps(consumption_entity)
