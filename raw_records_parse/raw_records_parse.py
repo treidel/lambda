@@ -83,7 +83,7 @@ def lambda_handler (event, context):
                 	measurement_entities[circuit_index] = measurement_entity
         	
 		# create the energy consumption entity
-        	consumption_entity = {'device' : device_entity, 'timestamp' : timestamp, 'measurement' : measurement_entities}
+        	consumption_entity = {'device' : device_entity, 'timestamp' : timestamp, 'measurements' : measurement_entities}
         
         	# serialize 
         	message = json.dumps(consumption_entity)
