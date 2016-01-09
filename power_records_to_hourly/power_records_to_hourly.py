@@ -38,7 +38,7 @@ def lambda_handler (event, context):
         key = {'device' : device_entity['device'], 'date' : date.isoformat() + 'Z'}
         # create the attribute updates
         attribute_updates = {}
-        for circuit_index, circuit in message['circuits'].iteritems():
+        for circuit_index, measurement in message['measurements'].iteritems():
             energy_in_kwh = Decimal(str(circuit['energy-in-kwh']))
             attribute_update = {'Action' : 'ADD', 'Value' : energy_in_kwh}
             attribute_updates['energy-in-kwh-{}'.format(circuit_index)] = attribute_update
