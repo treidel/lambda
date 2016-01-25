@@ -23,6 +23,12 @@ def lambda_handler (event, context):
     # get the table
     table = dynamodb.Table("hourly")
     
+    # get the current time
+    current_time = datetime.datetime.now().replace(microsecond=0)
+    
+    # compute the timestamp string
+    last_modified_timestamp = current_time.isoformat() + 'Z'
+    
     # iterate through records
     for record in event['Records']:
         # parse the message
@@ -38,6 +44,8 @@ def lambda_handler (event, context):
         key = {'device' : device_entity['device'], 'date' : date.isoformat() + 'Z'}
         # create the attribute updates
         attribute_updates = {}
+        # add the last-modified-time
+        attribute_updates['last-modified-time'] = {'Action' : 'PUT', 'Value' : last_modified_timestamp}
         for circuit_index, measurement in message['measurements'].iteritems():
             energy_in_kwh = Decimal(str(measurement['energy-in-kwh']))
             attribute_update = {'Action' : 'ADD', 'Value' : energy_in_kwh}
