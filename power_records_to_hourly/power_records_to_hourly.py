@@ -14,11 +14,11 @@ logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
 
-# create the dynamodb resource
-dynamodb = boto3.resource('dynamodb')
-
 def lambda_handler (event, context): 
     logger.debug("Received event: " + json.dumps(event))
+
+    # create the dynamodb resource
+    dynamodb = boto3.resource('dynamodb')
     
     # get the table
     table = dynamodb.Table("hourly")

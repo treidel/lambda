@@ -10,12 +10,12 @@ logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
 
-# get dynamodb object
-dynamodb = boto3.client('dynamodb')
-        
 def lambda_handler (event, context): 
     
     logger.debug('Received event={}'.format(json.dumps(event)))
+
+    # get dynamodb object
+    dynamodb = boto3.client('dynamodb')
 
     # calculate the cutoff date
     cutoff = datetime.date.today() - datetime.timedelta(days=1)

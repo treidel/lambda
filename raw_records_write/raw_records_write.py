@@ -12,9 +12,6 @@ logger = logging.getLogger()
 # default logging level is INFO
 logger.setLevel(logging.INFO)
 
-# create a dynamodb resource
-dynamodb = boto3.resource('dynamodb')
-
 logger.info('Loading function')
 
 def lambda_handler (event, context): 
@@ -22,6 +19,9 @@ def lambda_handler (event, context):
 
     # make sure they provided some data
     assert 'measurements' in event
+
+    # create a dynamodb resource
+    dynamodb = boto3.resource('dynamodb')
 
     # get the record's timestamp
     timestamp = dateutil.parser.parse(event['timestamp'])

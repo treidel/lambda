@@ -10,15 +10,15 @@ logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
 
-# get dynamodb object
-dynamodb_client = boto3.client('dynamodb')
-        
-# get lambda object
-lambda_client = boto3.client('lambda')
-
 def lambda_handler (event, context): 
     
     logger.debug("Received event: " + json.dumps(event))
+
+    # get dynamodb object
+    dynamodb_client = boto3.client('dynamodb')
+
+    # get lambda object
+    lambda_client = boto3.client('lambda')
     
     # list of arns we care about 
     stream_arns = []

@@ -10,11 +10,12 @@ logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
 
-# create a dynamodb client
-dynamodb_client = boto3.client('dynamodb')
 
 def lambda_handler (event, context): 
     logger.debug('Received event={}'.format(json.dumps(event)))
+
+    # create a dynamodb client
+    dynamodb_client = boto3.client('dynamodb')
 
     # get today's date
     today = datetime.date.today()

@@ -13,11 +13,11 @@ logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
 
-# create the SNS client
-sns_client = boto3.client('sns')
-
 def lambda_handler (event, context): 
     logger.debug("Received event: " + json.dumps(event))
+
+    # create the SNS client
+    sns_client = boto3.client('sns')
     
     # iterate through records
     for record in event['Records']:
