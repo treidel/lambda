@@ -21,7 +21,7 @@ def lambda_handler (event, context):
     assert 'measurements' in event
 
     # create a dynamodb resource
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb', use_ssl=False)
 
     # get the record's timestamp
     timestamp = dateutil.parser.parse(event['timestamp'])

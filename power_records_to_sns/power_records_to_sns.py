@@ -17,10 +17,10 @@ check_lambda_function = 'redis_test'
 logger.info('Loading function')
 
 # create the SNS client
-sns_client = boto3.client('sns')
+sns_client = boto3.client('sns', use_ssl=False)
 
 # create the Lambda client
-lambda_client = boto3.client('lambda')
+lambda_client = boto3.client('lambda', verify=False)
 
 def lambda_handler (event, context): 
     logger.debug("Received event: " + json.dumps(event))
