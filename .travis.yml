@@ -3,4 +3,4 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin
 script:
   - $TRAVIS_BUILD_DIR/package.sh
-  - $TRAVOS_BUILD_DIR/upload.sh
+  - $TRAVIS_BUILD_DIR/upload.sh
