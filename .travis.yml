@@ -1,0 +1,6 @@
+before_install:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
+script:
+  - $TRAVIS_BUILD_DIR/package.sh
+  - $TRAVOS_BUILD_DIR/upload.sh
