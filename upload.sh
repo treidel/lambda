@@ -4,4 +4,5 @@ for d in $DIRS; do
 	echo "uploading $d"
 	ZIPFILE="$d.zip"
 	aws lambda update-function-code --function-name $d --zip-file fileb://$ZIPFILE 
+	rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 done
